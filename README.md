@@ -24,5 +24,6 @@ npm run check    # typecheck + lint + vitest (unit + smoke)
 - `docs/deploy.md`: desplegar en Vercel + Supabase.
 - `docs/onboarding-negocio.md`: pasos para poner en vivo a un negocio que contrata.
 - `docs/demo-pitch.md`: guion de la demo para reuniones.
+- `docs/pendientes.md`: lista de pendientes (tú vs. Claude) hasta el primer cliente.
 - `tasks/todo.md`: roadmap y estado.
 - `tasks/parallel-prompts.md`: prompts para construir en paralelo con worktrees.
