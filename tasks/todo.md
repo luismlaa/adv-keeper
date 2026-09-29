@@ -1,0 +1,33 @@
+# Keeper — roadmap & tracker
+
+## Fase 0 — Scaffold (branch `chore/scaffold`) ✅
+- [x] Next.js 16 + TS strict + Tailwind, deps, env loader (zod), `.env.example`
+- [x] Migration: full schema + RLS + exclusion constraint + triggers
+- [x] Domain: slots, deposit, state machine, packages, reactivation, reminders
+- [x] Adapters: interfaces + fakes (calendar, payments w/ HMAC, web/recording channels) + registry
+- [x] Store port: MemoryStore + SupabaseStore
+- [x] BookingService: hold → deposit link → payment → confirm; expiry; idempotent
+- [x] Agent: zod tools, executor with tiers/caps, prompt v1 (CAN/CANNOT), tool-use loop
+- [x] Demo dataset + `npm run seed:demo`
+- [x] Tests: 46 unit + smoke (scripted LLM end-to-end)
+- [x] Docs: deploy, onboarding, pitch; CLAUDE.md; project memory; graphify
+
+## Hito M1 — Demo lista para pitch (tracks A, B, C en paralelo → `tasks/parallel-prompts.md`)
+- [ ] **A · `feat/concierge-chat`**: `/api/chat` + `/chat/[slug]` (persistir conversación/mensajes, cookie de sesión anónima con teléfono demo)
+- [ ] **B · `feat/owner-dashboard`**: login, agenda día/semana 💰/pendiente, ficha clienta, reactivar, aprobaciones, servicios
+- [ ] **C · `feat/demo-experience`**: landing, `/demo`, checkout simulado `/pay/demo/[linkId]` + webhook de pagos, `demo-reset` cron, límites de costo
+- [ ] Deploy a Vercel con tenant demo; recorrer `docs/demo-pitch.md` completo
+
+## Hito M2 — Primer negocio en vivo
+- [ ] **D · `feat/live-integrations`**: WhatsApp (webhook entrante + envío + plantillas), Google Calendar OAuth + adapter, Azul/Cardnet adapters, crons reminders / package-nudges / reactivation-scan / holds-expiry
+- [ ] Onboarding real (`docs/onboarding-negocio.md`)
+- [ ] P0 checklist de `docs/deploy.md`
+
+## v2 (después del primer cliente)
+- [ ] Multi-recurso (varias cabinas/profesionales) — reemplazar exclusion constraint por recurso
+- [ ] Venta de paquetes con link de pago desde el chat
+- [ ] Métricas: tasa de no-show, conversión chat→reserva, ingresos por anticipos
+- [ ] Billing de Keeper a los negocios
+
+## Review
+- Fase 0: typecheck + lint + 46 tests en verde. Supabase CLI/Docker no están instalados en esta máquina → la migración no se ejecutó localmente; aplicarla en el proyecto Supabase es el primer paso manual.
