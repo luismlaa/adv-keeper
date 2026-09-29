@@ -1,0 +1,29 @@
+{
+  "currency": "DOP",
+  "timezone": "America/Santo_Domingo",
+  "locale": "es-DO",
+  "deposit": {
+    "percent": 30,
+    "minimumMinor": 50000,
+    "roundToMinor": 5000
+  },
+  "holdMinutes": 30,
+  "reminderHoursBefore": 24,
+  "reactivationWeeks": 6,
+  "reengagementCooldownDays": 14,
+  "slotStepMinutes": 30,
+  "bufferMinutes": 10,
+  "minLeadMinutes": 120,
+  "bookingHorizonDays": 30,
+  "weeklyHours": {
+    "0": [],
+    "1": [{ "open": "09:00", "close": "18:00" }],
+    "2": [{ "open": "09:00", "close": "18:00" }],
+    "3": [{ "open": "09:00", "close": "18:00" }],
+    "4": [{ "open": "09:00", "close": "18:00" }],
+    "5": [{ "open": "09:00", "close": "19:00" }],
+    "6": [{ "open": "09:00", "close": "14:00" }]
+  },
+  "tone": "cálido, cercano y breve; tutea a la clienta; usa emojis con moderación",
+  "ownerDisplayName": "la dueña"
+}
