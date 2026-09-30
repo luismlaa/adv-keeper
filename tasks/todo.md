@@ -12,7 +12,11 @@
 - [x] Tests: 46 unit + smoke (scripted LLM end-to-end)
 - [x] Docs: deploy, onboarding, pitch; CLAUDE.md; project memory; graphify
 
-## Hito M1 — Demo lista para pitch (tracks A, B, C en paralelo → `tasks/parallel-prompts.md`)
+## Arranque ✅ (2026-09-30)
+- [x] PR #1 mergeado · Supabase creado · migración aplicada · Auth sin registro público
+- [x] `.env.local` · `npm run seed:demo` (8 servicios, 20 clientas, 16 citas, 10 anticipos) · `npm run check` verde (46 tests)
+
+## Hito M1 — Demo lista para pitch ⏳ en curso (tracks A, B, C en paralelo → `tasks/parallel-prompts.md`)
 - [ ] **A · `feat/concierge-chat`**: `/api/chat` + `/chat/[slug]` (persistir conversación/mensajes, cookie de sesión anónima con teléfono demo)
 - [ ] **B · `feat/owner-dashboard`**: login, agenda día/semana 💰/pendiente, ficha clienta, reactivar, aprobaciones, servicios
 - [ ] **C · `feat/demo-experience`**: landing, `/demo`, checkout simulado `/pay/demo/[linkId]` + webhook de pagos, `demo-reset` cron, límites de costo
@@ -31,3 +35,4 @@
 
 ## Review
 - Fase 0: typecheck + lint + 46 tests en verde. Supabase CLI/Docker no están instalados en esta máquina → la migración no se ejecutó localmente; aplicarla en el proyecto Supabase es el primer paso manual.
+- Arranque (2026-09-30): migración aplicada en Supabase y validada con el seed demo; `npm run check` verde.
