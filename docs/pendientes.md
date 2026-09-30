@@ -1,25 +1,25 @@
 # Pendientes — Keeper
 
-_Última actualización: 2026-09-28. La Fase 0 (núcleo, base de datos, agente, datos demo y docs) está terminada en `chore/scaffold`._
+_Última actualización: 2026-09-30. Fase 0 mergeada (PR #1). Arranque ✅ completo: Supabase + migración aplicada, demo sembrada, `npm run check` en verde. **En curso: Hito M1** — tracks A, B y C corriendo en paralelo._
 
 Leyenda: 👤 = lo haces tú (cuentas, credenciales, trámites) · 🤖 = lo construye una sesión de Claude (prompt listo en `tasks/parallel-prompts.md`)
 
 ---
 
-## 1. Arranque (esta semana) — 👤
-- [ ] Revisar y hacer merge del PR `chore/scaffold` → `main`
-- [ ] Crear proyecto en **Supabase** (región us-east-1)
-- [ ] Aplicar `supabase/migrations/20260928000000_init.sql` (SQL editor o `npx supabase db push`)
-- [ ] En Supabase Auth: desactivar registro público
-- [ ] Crear `.env.local` desde `.env.example` y llenar:
-  - [ ] `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
-  - [ ] `ANTHROPIC_API_KEY`
-  - [ ] `ENCRYPTION_KEY` → `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
-  - [ ] `CRON_SECRET`, `DEMO_OWNER_PASSWORD`, `DEMO_PAYMENT_WEBHOOK_SECRET` (strings aleatorios ≥16)
-- [ ] `npm install && npm run seed:demo` → debe crear "Spa Demo · Keeper" y la usuaria demo
-- [ ] `npm run check` en verde
+## 1. Arranque — 👤 ✅
+- [x] Revisar y hacer merge del PR `chore/scaffold` → `main`
+- [x] Crear proyecto en **Supabase** (región us-east-1)
+- [x] Aplicar `supabase/migrations/20260928000000_init.sql` (SQL editor o `npx supabase db push`)
+- [x] En Supabase Auth: desactivar registro público
+- [x] Crear `.env.local` desde `.env.example` y llenar:
+  - [x] `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+  - [x] `ANTHROPIC_API_KEY`
+  - [x] `ENCRYPTION_KEY` → `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
+  - [x] `CRON_SECRET`, `DEMO_OWNER_PASSWORD`, `DEMO_PAYMENT_WEBHOOK_SECRET` (strings aleatorios ≥16)
+- [x] `npm install && npm run seed:demo` → debe crear "Spa Demo · Keeper" y la usuaria demo
+- [x] `npm run check` en verde
 
-## 2. Hito M1 — Demo lista para pitch — 🤖
+## 2. Hito M1 — Demo lista para pitch — 🤖 ⏳ en curso
 Correr en paralelo, un worktree por tarea (comandos en `tasks/parallel-prompts.md`):
 - [ ] **A · Chat de la clienta** (`feat/concierge-chat`): `/chat/spa-demo` con Claude real; guarda la conversación y respeta el límite de mensajes
 - [ ] **B · Dashboard de la dueña** (`feat/owner-dashboard`): login, agenda día/semana 💰/⏳/📦, ficha de clienta con paquetes, reactivar, aprobaciones, servicios, ajustes
@@ -62,5 +62,5 @@ Correr en paralelo, un worktree por tarea (comandos en `tasks/parallel-prompts.m
 
 ### Notas / riesgos
 - El repo en GitHub es **público**. Nunca subas `.env.local`; ya está ignorado. Considera hacerlo privado antes de tener clientes.
-- La migración todavía no se ha probado contra un Postgres real; el primer `db push` es la prueba.
+- ~~La migración todavía no se ha probado contra un Postgres real~~ → aplicada en Supabase y validada por `npm run seed:demo` (2026-09-30).
 - En producción, las holds de 30 min dependen del cron de expiración (ver la decisión Vercel Pro vs `pg_cron`).
