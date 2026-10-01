@@ -25,3 +25,9 @@ alter table public.integrations add column updated_at timestamptz not null defau
 
 comment on column public.integrations.encrypted_credentials is
   'AES-256-GCM (ENCRYPTION_KEY) of a provider-specific JSON object: google_calendar {refreshToken, calendarId}; azul/cardnet merchant credentials.';
+
+-- WhatsApp inbound dedupe (Track D1): Meta may deliver the same message more than once, even concurrently.
+-- The webhook records one `whatsapp_inbound` row per wamid before processing; this makes that atomic.
+create unique index activity_log_whatsapp_inbound_dedupe_idx
+  on public.activity_log (business_id, entity_id)
+  where action = 'whatsapp_inbound';
