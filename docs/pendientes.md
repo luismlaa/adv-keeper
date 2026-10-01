@@ -1,6 +1,6 @@
 # Pendientes — Keeper
 
-_Última actualización: 2026-09-30. Fase 0 mergeada (PR #1). Arranque ✅. **Hito M1: código terminado** (PRs #3, #4, #5 mergeados + cierre). Falta lo tuyo: deploy en Vercel, decisión de crons, ensayo del pitch._
+_Última actualización: 2026-09-30. Fase 0 mergeada (PR #1). Arranque ✅. Hito M1 ✅ — demo en producción en https://adv-keeper.vercel.app (Vercel Hobby, auto-deploy desde `main`). **En curso: Hito M2.**_
 
 Leyenda: 👤 = lo haces tú (cuentas, credenciales, trámites) · 🤖 = lo construye una sesión de Claude (prompt listo en `tasks/parallel-prompts.md`)
 
@@ -19,26 +19,30 @@ Leyenda: 👤 = lo haces tú (cuentas, credenciales, trámites) · 🤖 = lo con
 - [x] `npm install && npm run seed:demo` → debe crear "Spa Demo · Keeper" y la usuaria demo
 - [x] `npm run check` en verde
 
-## 2. Hito M1 — Demo lista para pitch — 🤖 ✅ código · 👤 ⏳ deploy
+## 2. Hito M1 — Demo lista para pitch ✅ (2026-09-30)
 - [x] **A · Chat de la clienta** (PR #4): `/chat/spa-demo` con Claude real; guarda la conversación y respeta el límite de mensajes
 - [x] **B · Dashboard de la dueña** (PR #5): login, agenda día/semana 💰/⏳/📦, ficha de clienta con paquetes, reactivar, aprobaciones, servicios, ajustes
 - [x] **C · Experiencia demo** (PR #3): landing, `/demo` con entrada en un clic, checkout simulado, webhook de pagos, reset nocturno, tope de gasto de Claude
 - [x] Revisar y hacer merge de A, B y C (👤)
 - [x] Cierre M1: tope diario de la demo conectado al chat, `typecheck` genera tipos de rutas, reset real de la demo probado con `CRON_SECRET`
-- [ ] Deploy en **Vercel** con variables de entorno + `APP_URL` de producción (👤). Ojo: el botón "Pagar anticipo" postea al webhook en `APP_URL`, tiene que ser la URL real
+- [x] Deploy en **Vercel** → https://adv-keeper.vercel.app, 16 variables en Production, GitHub conectado (cada merge a `main` despliega). Probado en producción: chat con Claude → hold → pago firmado → cita confirmada; firma falsa → 401; cron `demo-reset` con secreto
 - [x] Decidir el plan de Vercel → **Hobby (gratis)**: `vercel.json` solo tiene el cron diario `demo-reset`; los crons frecuentes irán en Supabase `pg_cron` + `pg_net` (track D). Regla: preconstruir a costo 0
-- [ ] Ensayar `docs/demo-pitch.md` de punta a punta en el teléfono (👤)
-- [ ] Compartir credenciales demo con los primeros prospectos (👤)
+- [ ] Ensayar `docs/demo-pitch.md` de punta a punta en el teléfono, incluido el login de la dueña (👤, en paralelo al M2)
+- [ ] Compartir credenciales demo con los primeros prospectos (👤, en paralelo al M2)
 
-## 3. Hito M2 — Primer negocio en vivo
-### Trámites — 👤 (empezar YA, tardan semanas)
+## 3. Hito M2 — Primer negocio en vivo ⏳ en curso
+### Trámites — 👤 (empezar YA, tardan semanas). Costo 0: todo con cuentas gratis, número de prueba de Meta y sandbox
 - [ ] **Google Cloud**: proyecto + pantalla de consentimiento OAuth + **iniciar la verificación** (el scope de calendario es sensible). Hace falta dominio, política de privacidad y video demo
 - [ ] **Meta**: app de desarrollador + WhatsApp Cloud API; con el primer cliente: Business verificado, número dedicado y aprobación de plantillas (`day_before_reminder`, `deposit_link`, `package_nudge`, `reactivation`)
 - [ ] **Azul / Cardnet**: averiguar el proceso de afiliación a e-commerce (página de pago hospedada) y conseguir credenciales **sandbox** para probar
 - [ ] Dominio propio para Keeper + política de privacidad + términos de uso
 
 ### Construcción — 🤖
-- [ ] **D · Integraciones live** (`feat/live-integrations`, merge después de A): adapters de WhatsApp, Google Calendar OAuth, Azul y Cardnet; crons de recordatorios, nudges de paquetes, reactivación y expiración de holds
+El track D se divide en 4 (archivos disjuntos, prompts en `tasks/parallel-prompts.md`). Se construyen contra la documentación pública con `fetch` mockeado, así que no hacen falta credenciales:
+- [ ] **D1 · WhatsApp** (`feat/live-whatsapp`): adapter Cloud API, webhook entrante → `handleClientMessage`, plantillas en `src/lib/notifications/templates.ts`
+- [ ] **D2 · Google Calendar** (`feat/live-google-calendar`): OAuth start/callback, token cifrado (`src/lib/crypto.ts`), adapter freeBusy + eventos
+- [ ] **D3 · Pagos** (`feat/live-payments`): adapters Azul y Cardnet (página hospedada + verificación de hash), `/api/pay/[provider]/[linkId]`
+- [ ] **D4 · Crons + cableado** (`feat/live-crons`, **después** de D1–D3): holds-expiry y reminders en `pg_cron`, package-nudges y reactivation-scan en `vercel.json`, `registerLiveAdapters` en `src/lib/adapters/live.ts`
 - [ ] Validar el hash/callback de Azul o Cardnet contra la documentación oficial cuando lleguen las credenciales
 
 ### Onboarding del primer cliente — 👤
