@@ -5,6 +5,7 @@ import { buildDemoDataset } from "@/lib/demo/dataset";
 import { DEFAULT_BUSINESS_SETTINGS } from "@/lib/config/business-settings";
 import { BLOCKING_STATUSES } from "@/lib/domain/appointment-state";
 import { findReactivationCandidates } from "@/lib/domain/reactivation";
+import { buildTemplateMessage, renderPreview } from "@/lib/notifications/templates";
 import { DAY_MS } from "@/lib/domain/time";
 import type { ClientPackage } from "@/lib/schemas/entities";
 
@@ -78,8 +79,18 @@ describe("reactivation", () => {
     const m = reactivationMessage("Patricia Cabrera", "Spa Demo");
     expect(m.variables).toEqual(["Patricia", "Spa Demo"]);
     expect(m.previewText).toMatch(/^¡Hola, Patricia! Te extrañamos en Spa Demo/);
-    expect(reactivationMessage(null, "Spa").previewText).toMatch(/^¡Hola! /);
+    expect(reactivationMessage(null, "Spa").previewText).toMatch(/^¡Hola, clienta! Te extrañamos en Spa/);
     expect(firstName("  ")).toBe("");
+  });
+
+  it("previews exactly the approved WhatsApp template", () => {
+    for (const name of ["Patricia Cabrera", null, "  "]) {
+      const m = reactivationMessage(name, "Spa Demo");
+      const approved = buildTemplateMessage("reactivation", { clientName: name, businessName: "Spa Demo" });
+      expect(m.variables).toEqual(approved.variables);
+      expect(m.previewText).toBe(approved.previewText);
+      expect(m.previewText).toBe(renderPreview("reactivation", m.variables));
+    }
   });
 
   it("finds exactly the 8 seeded demo candidates", () => {

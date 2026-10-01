@@ -1,6 +1,7 @@
 import type { ServerEnv } from "@/lib/config/env";
 import type { Business } from "@/lib/schemas/entities";
 import { FakeCalendar } from "./calendar/fake";
+import { liveAdapterFactory } from "./live";
 import type { CalendarProvider } from "./calendar/types";
 import { WebChannel } from "./messaging/web";
 import type { MessagingChannel } from "./messaging/types";
@@ -22,10 +23,14 @@ export class IntegrationNotAvailableError extends Error {
   }
 }
 
-let liveFactory: LiveAdapterFactory | undefined;
+/**
+ * Live integrations: WhatsApp + Google Calendar + Azul/Cardnet (`live.ts`). `live.ts` only imports types
+ * from this module, so taking its factory as the default here has no import cycle at runtime.
+ */
+let liveFactory: LiveAdapterFactory | undefined = liveAdapterFactory;
 
-/** Live integrations (WhatsApp, Google, Azul/Cardnet) register themselves here. */
-export function registerLiveAdapters(factory: LiveAdapterFactory): void {
+/** Replaces the live factory (tests); `undefined` unregisters it. */
+export function registerLiveAdapters(factory: LiveAdapterFactory | undefined): void {
   liveFactory = factory;
 }
 
