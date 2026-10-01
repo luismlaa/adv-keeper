@@ -134,3 +134,13 @@ describe("owner actions", () => {
     expect(availableOwnerActions("completed")).toEqual([]);
   });
 });
+
+describe("cancelsPendingDeposit", () => {
+  it("only cancelling a hold expires its deposit link", async () => {
+    const { cancelsPendingDeposit } = await import("@/lib/dashboard/appointment-actions");
+    expect(cancelsPendingDeposit("hold_pending_deposit", "cancel")).toBe(true);
+    expect(cancelsPendingDeposit("confirmed", "cancel")).toBe(false);
+    expect(cancelsPendingDeposit("confirmed", "no_show")).toBe(false);
+    expect(cancelsPendingDeposit("confirmed", "complete")).toBe(false);
+  });
+});

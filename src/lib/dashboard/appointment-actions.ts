@@ -4,7 +4,7 @@ import { transition, type AppointmentEvent } from "@/lib/domain/appointment-stat
 import { consumeSession } from "@/lib/domain/packages";
 import type { Appointment, ClientPackage } from "@/lib/schemas/entities";
 import { toAppointment, toClientPackage } from "@/lib/store/rows";
-import { logOwnerActivity } from "./audit";
+import { expirePendingDeposit, logOwnerActivity } from "./audit";
 import type { OwnerContext } from "./context";
 
 export type OwnerAppointmentAction = "complete" | "no_show" | "cancel";
@@ -20,6 +20,11 @@ const DEFAULT_REASONS: Readonly<Record<OwnerAppointmentAction, string>> = {
   no_show: "La dueña marcó que la clienta no asistió",
   cancel: "La dueña canceló la cita desde la agenda",
 };
+
+/** Cancelling a hold must also kill its pending deposit link. */
+export function cancelsPendingDeposit(from: Appointment["status"], action: OwnerAppointmentAction): boolean {
+  return action === "cancel" && from === "hold_pending_deposit";
+}
 
 export class StaleAppointmentError extends Error {
   constructor() {
@@ -67,6 +72,8 @@ export async function applyOwnerAppointmentAction(
   const meta: Record<string, unknown> = { from: current.status, to: next.status };
 
   if (pkgPlan !== null) meta.package = await applyPackageSession(ctx, pkgPlan);
+
+  if (cancelsPendingDeposit(current.status, action)) meta.depositsExpired = await expirePendingDeposit(ctx, current.id);
 
   if (action === "cancel" && current.calendarEventId !== null && ctx.business.googleCalendarId !== null) {
     try {
