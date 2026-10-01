@@ -40,3 +40,21 @@ export async function recordOwnerNotification(
 ): Promise<boolean> {
   return serverStore().recordNotification({ businessId: ctx.business.id, ...input });
 }
+
+/**
+ * When the owner cancels a hold, its still-pending deposit is marked `expired` so the payment link is
+ * dead in the data too (the pay pages already refuse a non-hold appointment). Owners can only read
+ * `deposits` under RLS, so this goes through the service role, scoped by the verified business id.
+ * Conditional on `pending`: a deposit paid in the meantime is never touched (the owner decides on it).
+ */
+export async function expirePendingDeposit(ctx: OwnerContext, appointmentId: string): Promise<number> {
+  const { data, error } = await createAdminClient(getServerEnv())
+    .from("deposits")
+    .update({ status: "expired" })
+    .eq("business_id", ctx.business.id)
+    .eq("appointment_id", appointmentId)
+    .eq("status", "pending")
+    .select("id");
+  if (error) throw new Error(`expire deposit failed: ${error.message}`);
+  return data?.length ?? 0;
+}
