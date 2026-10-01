@@ -16,15 +16,19 @@
 - [x] PR #1 mergeado · Supabase creado · migración aplicada · Auth sin registro público
 - [x] `.env.local` · `npm run seed:demo` (8 servicios, 20 clientas, 16 citas, 10 anticipos) · `npm run check` verde (46 tests)
 
-## Hito M1 — Demo lista para pitch ✅ código (falta deploy)
+## Hito M1 — Demo lista para pitch ✅ (2026-09-30)
 - [x] **A · `feat/concierge-chat`** (PR #4): `/api/chat` + `/chat/[slug]` (persistir conversación/mensajes, cookie de sesión anónima con teléfono demo)
 - [x] **B · `feat/owner-dashboard`** (PR #5): login, agenda día/semana 💰/pendiente, ficha clienta, reactivar, aprobaciones, servicios
 - [x] **C · `feat/demo-experience`** (PR #3): landing, `/demo`, checkout simulado `/pay/demo/[linkId]` + webhook de pagos, `demo-reset` cron, límites de costo
 - [x] Cierre: `isDemoBudgetExhausted` cableado en `handleClientMessage` (429 `daily_budget`), `typecheck` = `next typegen && tsc`, reset real probado
-- [ ] Deploy a Vercel con tenant demo; recorrer `docs/demo-pitch.md` completo
+- [x] Deploy a Vercel (Hobby, https://adv-keeper.vercel.app, auto-deploy desde `main`); flujo completo probado en producción
+- [ ] Ensayo de `docs/demo-pitch.md` en teléfono (👤)
 
-## Hito M2 — Primer negocio en vivo
-- [ ] **D · `feat/live-integrations`**: WhatsApp (webhook entrante + envío + plantillas), Google Calendar OAuth + adapter, Azul/Cardnet adapters, crons reminders / package-nudges / reactivation-scan / holds-expiry
+## Hito M2 — Primer negocio en vivo ⏳
+- [ ] **D1 · `feat/live-whatsapp`**: `MessagingChannel` Cloud API (texto + plantillas, timeout + retry), webhook GET verify / POST firmado → `handleClientMessage`, dedupe por message id, `notifications/templates.ts`
+- [ ] **D2 · `feat/live-google-calendar`**: `crypto.ts` (AES-256-GCM), OAuth start/callback con `state` atado a sesión+negocio, `CalendarProvider` freeBusy/insert/delete
+- [ ] **D3 · `feat/live-payments`**: `PaymentProvider` Azul + Cardnet (hash builder aislado y testeado), `/api/pay/[provider]/[linkId]`
+- [ ] **D4 · `feat/live-crons`** (después de D1–D3): `live.ts` + `registerLiveAdapters`, crons holds-expiry/reminders (migración `pg_cron` + `pg_net`) y package-nudges/reactivation-scan (`vercel.json` diario/semanal)
 - [ ] Onboarding real (`docs/onboarding-negocio.md`)
 - [ ] P0 checklist de `docs/deploy.md`
 
