@@ -1,4 +1,5 @@
 import type { ReactivationInput } from "@/lib/domain/reactivation";
+import { buildTemplateMessage } from "@/lib/notifications/templates";
 
 /** Pure helpers for /reactivar. No I/O. */
 
@@ -29,16 +30,13 @@ export function firstName(name: string | null): string {
 }
 
 /**
- * Variables and rendered preview for the approved `reactivation` WhatsApp template.
- * Variable order: {{1}} client first name, {{2}} business name.
+ * Variables and rendered preview for the approved `reactivation` WhatsApp template — built by the single
+ * source of truth (`buildTemplateMessage`), so what the owner previews is exactly what Meta approved.
+ * Variable order: {{1}} client first name ("clienta" when unknown), {{2}} business name.
  */
 export function reactivationMessage(clientName: string | null, businessName: string): { variables: string[]; previewText: string } {
-  const name = firstName(clientName);
-  const greeting = name === "" ? "¡Hola!" : `¡Hola, ${name}!`;
-  return {
-    variables: [name === "" ? "clienta" : name, businessName],
-    previewText: `${greeting} Te extrañamos en ${businessName} 💆‍♀️ ¿Te reservamos un espacio esta semana? Responde a este mensaje y te buscamos el horario que mejor te quede.`,
-  };
+  const { variables, previewText } = buildTemplateMessage("reactivation", { clientName, businessName });
+  return { variables, previewText };
 }
 
 export function weeksLabel(days: number): string {

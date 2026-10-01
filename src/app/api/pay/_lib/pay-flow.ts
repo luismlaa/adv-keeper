@@ -5,7 +5,7 @@ import { processPaymentWebhook, type PaymentWebhookResult } from "@/lib/demo/pay
 import { formatMoney } from "@/lib/domain/money";
 import type { Appointment, Business, Deposit } from "@/lib/schemas/entities";
 import type { KeeperStore } from "@/lib/store/types";
-import { isLivePayProvider, type GatewayForm, type LivePayProvider, type PaymentGateway } from "./gateways";
+import { isLivePayProvider, type GatewayForm, type LivePayProvider, type PaymentGateway } from "@/lib/adapters/payments/gateway";
 import type { PayPage, PayPageContext } from "./html";
 
 export interface PayFlowDeps {
@@ -18,7 +18,7 @@ export interface PayFlowDeps {
 }
 
 export interface ReturnDeps extends PayFlowDeps {
-  /** Full adapter set (calendar too: confirming creates the calendar event). Payments is overridden. */
+  /** The registered live adapters: payments verifies the callback, calendar gets the confirmed event. */
   resolveAdapters: (business: Business) => Adapters;
 }
 
@@ -136,7 +136,7 @@ export async function handleGatewayReturn(
 ): Promise<PageOutcome & { result?: PaymentWebhookResult }> {
   const ctx = await loadPayContext(deps, input.provider, input.linkId);
   if (ctx === null || !OUTCOMES[ctx.provider].includes(input.outcome)) return NOT_FOUND;
-  const { provider, deposit, appointment, business, gateway, view } = ctx;
+  const { provider, deposit, appointment, business, view } = ctx;
 
   if (deposit.status === "paid") return paidPage(appointment, view); // duplicate return: nothing to do
   if (input.outcome === "cancel") {
@@ -162,7 +162,7 @@ export async function handleGatewayReturn(
     result = await processPaymentWebhook(
       {
         store: deps.store,
-        resolveAdapters: (b) => ({ ...deps.resolveAdapters(b), payments: gateway.payments }),
+        resolveAdapters: deps.resolveAdapters,
         clock: deps.clock,
         log: deps.log,
       },

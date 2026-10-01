@@ -30,13 +30,8 @@ export const serverEnvSchema = z.object({
   GOOGLE_CLIENT_ID: optionalString,
   GOOGLE_CLIENT_SECRET: optionalString,
 
-  AZUL_MERCHANT_ID: optionalString,
-  AZUL_MERCHANT_NAME: optionalString,
-  AZUL_AUTH_KEY: optionalString,
+  // Gateway base URLs only (unset → sandbox/lab). Merchant credentials are per business, encrypted in `integrations`.
   AZUL_PAYMENT_PAGE_URL: optionalString,
-
-  CARDNET_MERCHANT_ID: optionalString,
-  CARDNET_TERMINAL_ID: optionalString,
   CARDNET_API_URL: optionalString,
 
   ENCRYPTION_KEY: z.string().regex(/^[0-9a-f]{64}$/i, "ENCRYPTION_KEY must be 32 bytes hex (64 chars)"),

@@ -1,6 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
-    { "path": "/api/cron/demo-reset", "schedule": "0 8 * * *" }
+    { "path": "/api/cron/demo-reset", "schedule": "0 8 * * *" },
+    { "path": "/api/cron/package-nudges", "schedule": "0 14 * * *" },
+    { "path": "/api/cron/reactivation-scan", "schedule": "0 12 * * 1" }
   ]
 }

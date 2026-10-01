@@ -265,16 +265,7 @@ export class BookingService {
   ): Promise<Appointment> {
     const service = await this.requireService(business.id, appointment.serviceId);
     const confirmed = transition(appointment, why === "deposit_paid" ? "deposit_paid" : "owner_confirmed_without_deposit");
-    const event =
-      business.googleCalendarId === null
-        ? null
-        : await this.deps.adapters.calendar.createEvent({
-            calendarRef: business.googleCalendarId,
-            summary: `${service.name} (Keeper)`,
-            description: `Cita confirmada por Keeper · ${why === "deposit_paid" ? "anticipo pagado" : "sesión de paquete"}`,
-            start: new Date(appointment.startsAt),
-            end: new Date(appointment.endsAt),
-          });
+    const event = await this.createCalendarEvent(business, appointment, service, why);
     const saved = await this.deps.store.updateAppointment({ ...confirmed, calendarEventId: event?.eventId ?? null });
     await this.deps.store.logActivity({
       businessId: business.id,
@@ -286,6 +277,44 @@ export class BookingService {
       meta: { calendarEventId: saved.calendarEventId },
     });
     return saved;
+  }
+
+  /**
+   * Mirrors a confirmed appointment into the business calendar. Best effort: by the time we get here the
+   * deposit may already be marked paid, so a calendar failure (Google not connected, revoked, down) must
+   * never block the confirmation. The skip is logged for the owner instead.
+   */
+  private async createCalendarEvent(
+    business: Business,
+    appointment: Appointment,
+    service: Service,
+    why: "deposit_paid" | "deposit_not_required",
+  ): Promise<{ eventId: string } | null> {
+    if (business.googleCalendarId === null) return null;
+    try {
+      return await this.deps.adapters.calendar.createEvent({
+        calendarRef: business.googleCalendarId,
+        summary: `${service.name} (Keeper)`,
+        description: `Cita confirmada por Keeper · ${why === "deposit_paid" ? "anticipo pagado" : "sesión de paquete"}`,
+        start: new Date(appointment.startsAt),
+        end: new Date(appointment.endsAt),
+      });
+    } catch (error) {
+      const code = (error as { code?: unknown } | null)?.code;
+      await this.deps.store.logActivity({
+        businessId: business.id,
+        actor: "system:calendar",
+        entity: "appointment",
+        entityId: appointment.id,
+        action: "calendar_event_skipped",
+        reason:
+          code === "google_not_connected" || code === "google_disconnected"
+            ? "Google Calendar no está conectado: la cita se confirmó sin evento en el calendario (reconectar en Ajustes)"
+            : "No se pudo crear el evento en Google Calendar: la cita se confirmó igual",
+        meta: { error: error instanceof Error ? error.name : "unknown", code: typeof code === "string" ? code : null },
+      });
+      return null;
+    }
   }
 
   /** Releases holds whose deposit window elapsed. Returns the expired appointments. */

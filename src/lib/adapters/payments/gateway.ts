@@ -1,11 +1,10 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAzulPayments } from "@/lib/adapters/azul/payments";
 import { createCardnetPayments } from "@/lib/adapters/cardnet/payments";
-import { ActivityLogCardnetSessionStore, type CardnetSessionStore } from "@/lib/adapters/cardnet/session-store";
+import type { CardnetSessionStore } from "@/lib/adapters/cardnet/session-store";
 import type { FetchLike } from "@/lib/adapters/cardnet/http";
 import type { PaymentProvider } from "@/lib/adapters/payments/types";
 import type { ServerEnv } from "@/lib/config/env";
-import { IntegrationCredentials, SupabaseIntegrationRepo } from "@/lib/integrations/repo";
+import type { IntegrationCredentials } from "@/lib/integrations/repo";
 import type { ActivityEntry, Business, Deposit } from "@/lib/schemas/entities";
 
 export type LivePayProvider = "azul" | "cardnet";
@@ -59,21 +58,21 @@ export function createPaymentGateway(business: Business, deps: GatewayDeps): Pay
   return null;
 }
 
+/** Per-request services the gateways need (built on the admin client in production, in memory in tests). */
+export type GatewayServices = Pick<GatewayDeps, "credentials" | "cardnetSessions" | "logActivity" | "fetch" | "sleep">;
+
 /**
- * Production wiring. Global env supplies only Keeper-level config (APP_URL, gateway base URLs,
- * ENCRYPTION_KEY); merchant credentials always come from the business's `integrations` row.
+ * Production wiring. Global env supplies only Keeper-level config (APP_URL, gateway base URLs);
+ * merchant credentials always come from the business's encrypted `integrations` row.
  */
 export function gatewayDepsFromEnv(
-  env: ServerEnv,
-  db: SupabaseClient,
-  logActivity: (entry: ActivityEntry) => Promise<void>,
+  env: Pick<ServerEnv, "APP_URL" | "AZUL_PAYMENT_PAGE_URL" | "CARDNET_API_URL">,
+  services: GatewayServices,
 ): GatewayDeps {
   return {
+    ...services,
     appUrl: env.APP_URL,
-    credentials: new IntegrationCredentials(new SupabaseIntegrationRepo(db), env.ENCRYPTION_KEY),
-    cardnetSessions: new ActivityLogCardnetSessionStore(db, env.ENCRYPTION_KEY),
     azulPaymentPageUrl: env.AZUL_PAYMENT_PAGE_URL,
     cardnetApiUrl: env.CARDNET_API_URL,
-    logActivity,
   };
 }

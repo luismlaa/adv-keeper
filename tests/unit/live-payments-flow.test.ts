@@ -8,7 +8,7 @@ import { BookingService } from "@/lib/booking/booking-service";
 import { IntegrationCredentials, MemoryIntegrationRepo } from "@/lib/integrations/repo";
 import type { Business } from "@/lib/schemas/entities";
 import { MemoryStore } from "@/lib/store/memory";
-import { createPaymentGateway, type GatewayDeps } from "@/app/api/pay/_lib/gateways";
+import { createPaymentGateway, type GatewayDeps } from "@/lib/adapters/payments/gateway";
 import { escapeHtml, renderGatewayForm, renderPayPage } from "@/app/api/pay/_lib/html";
 import { handleGatewayReturn, prepareHandoff, type ReturnDeps } from "@/app/api/pay/_lib/pay-flow";
 import { business as baseBusiness, client, facial, NOW, otherClient, TUESDAY_10 } from "../helpers/fixtures";
@@ -51,8 +51,8 @@ async function world(provider: Provider, fetchResponses: Response[] = []) {
     clock: () => now,
     appUrl: "https://keeper.test",
     gatewayFor: (b) => createPaymentGateway(b, gatewayDeps),
-    // The fake gateway here must never be used: pay-flow overrides payments with the business's gateway.
-    resolveAdapters: () => ({ ...adapters, payments: { kind: "fake", createDepositLink: async () => ({ linkId: "x", url: "x" }), verifyWebhook: async () => null } }),
+    // What the live factory resolves for this business: its own gateway's PaymentProvider.
+    resolveAdapters: () => adapters,
   };
   return { business, store, deposit, hold, deps, fetchCalls, setNow: (d: Date) => (now = d) };
 }
