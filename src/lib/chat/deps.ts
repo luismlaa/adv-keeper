@@ -3,6 +3,7 @@ import { resolveAdapters } from "@/lib/adapters/registry";
 import { anthropicLlm } from "@/lib/agent/concierge";
 import { getServerEnv } from "@/lib/config/env";
 import { createAdminClient } from "@/lib/db/admin";
+import { isDemoBudgetExhausted } from "@/lib/rate-limit";
 import { SupabaseStore } from "@/lib/store/supabase";
 import { SupabaseConversationRepo } from "./conversation-repo";
 import type { ChatDeps } from "./handle-message";
@@ -23,6 +24,7 @@ export function defaultChatDeps(): ChatDeps {
     model: env.ANTHROPIC_MODEL,
     maxTokens: env.ANTHROPIC_MAX_TOKENS,
     demoMaxMessagesPerSession: env.DEMO_MAX_MESSAGES_PER_SESSION,
+    isDailyBudgetExhausted: isDemoBudgetExhausted,
   };
   return cached;
 }

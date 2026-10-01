@@ -1,6 +1,6 @@
 # Pendientes — Keeper
 
-_Última actualización: 2026-09-30. Fase 0 mergeada (PR #1). Arranque ✅ completo: Supabase + migración aplicada, demo sembrada, `npm run check` en verde. **En curso: Hito M1** — tracks A, B y C corriendo en paralelo._
+_Última actualización: 2026-09-30. Fase 0 mergeada (PR #1). Arranque ✅. **Hito M1: código terminado** (PRs #3, #4, #5 mergeados + cierre). Falta lo tuyo: deploy en Vercel, decisión de crons, ensayo del pitch._
 
 Leyenda: 👤 = lo haces tú (cuentas, credenciales, trámites) · 🤖 = lo construye una sesión de Claude (prompt listo en `tasks/parallel-prompts.md`)
 
@@ -19,13 +19,13 @@ Leyenda: 👤 = lo haces tú (cuentas, credenciales, trámites) · 🤖 = lo con
 - [x] `npm install && npm run seed:demo` → debe crear "Spa Demo · Keeper" y la usuaria demo
 - [x] `npm run check` en verde
 
-## 2. Hito M1 — Demo lista para pitch — 🤖 ⏳ en curso
-Correr en paralelo, un worktree por tarea (comandos en `tasks/parallel-prompts.md`):
-- [ ] **A · Chat de la clienta** (`feat/concierge-chat`): `/chat/spa-demo` con Claude real; guarda la conversación y respeta el límite de mensajes
-- [ ] **B · Dashboard de la dueña** (`feat/owner-dashboard`): login, agenda día/semana 💰/⏳/📦, ficha de clienta con paquetes, reactivar, aprobaciones, servicios, ajustes
-- [ ] **C · Experiencia demo** (`feat/demo-experience`): landing, `/demo` con entrada en un clic, checkout simulado, webhook de pagos, reset nocturno, tope de gasto de Claude
-- [ ] Revisar y hacer merge de A, B y C (👤)
-- [ ] Deploy en **Vercel** con variables de entorno + `APP_URL` de producción (👤)
+## 2. Hito M1 — Demo lista para pitch — 🤖 ✅ código · 👤 ⏳ deploy
+- [x] **A · Chat de la clienta** (PR #4): `/chat/spa-demo` con Claude real; guarda la conversación y respeta el límite de mensajes
+- [x] **B · Dashboard de la dueña** (PR #5): login, agenda día/semana 💰/⏳/📦, ficha de clienta con paquetes, reactivar, aprobaciones, servicios, ajustes
+- [x] **C · Experiencia demo** (PR #3): landing, `/demo` con entrada en un clic, checkout simulado, webhook de pagos, reset nocturno, tope de gasto de Claude
+- [x] Revisar y hacer merge de A, B y C (👤)
+- [x] Cierre M1: tope diario de la demo conectado al chat, `typecheck` genera tipos de rutas, reset real de la demo probado con `CRON_SECRET`
+- [ ] Deploy en **Vercel** con variables de entorno + `APP_URL` de producción (👤). Ojo: el botón "Pagar anticipo" postea al webhook en `APP_URL`, tiene que ser la URL real
 - [ ] Decidir el plan de Vercel: **Pro** para crons cada 10 min/hora, o mover esos crons a Supabase `pg_cron` (👤)
 - [ ] Ensayar `docs/demo-pitch.md` de punta a punta en el teléfono (👤)
 - [ ] Compartir credenciales demo con los primeros prospectos (👤)
@@ -61,6 +61,7 @@ Correr en paralelo, un worktree por tarea (comandos en `tasks/parallel-prompts.m
 ---
 
 ### Notas / riesgos
+- Seguimientos del M1 (antes del primer cliente real): cancelar una cita en hold desde el dashboard deja abierto el link de pago (la dueña solo puede leer `deposits` bajo RLS); el texto de "Reenganchar" debe alinearse con la plantilla aprobada de WhatsApp (track D); una dueña con varios negocios siempre ve el más antiguo.
 - El repo en GitHub es **público**. Nunca subas `.env.local`; ya está ignorado. Considera hacerlo privado antes de tener clientes.
 - ~~La migración todavía no se ha probado contra un Postgres real~~ → aplicada en Supabase y validada por `npm run seed:demo` (2026-09-30).
 - En producción, las holds de 30 min dependen del cron de expiración (ver la decisión Vercel Pro vs `pg_cron`).
