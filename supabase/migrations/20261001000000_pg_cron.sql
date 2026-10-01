@@ -11,11 +11,11 @@ create extension if not exists pg_net with schema extensions;
 
 do $$
 declare
-  job text;
+  job_name text;
 begin
-  foreach job in array array['keeper-holds-expiry', 'keeper-reminders'] loop
-    if exists (select 1 from cron.job where jobname = job) then
-      perform cron.unschedule(job);
+  foreach job_name in array array['keeper-holds-expiry', 'keeper-reminders'] loop
+    if exists (select 1 from cron.job where jobname = job_name) then
+      perform cron.unschedule(job_name);
     end if;
   end loop;
 end

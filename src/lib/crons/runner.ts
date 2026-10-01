@@ -64,8 +64,21 @@ export async function forEachLiveBusiness(
   businesses?: readonly Business[],
 ): Promise<CronSummary> {
   const live = (businesses ?? (await deps.repo.listLiveBusinesses())).filter((b) => b.integrationMode === "live");
+  return forEachBusiness(deps, job, work, live);
+}
+
+/**
+ * Runs `work` for exactly the given businesses, demo included. Only for jobs that never message clients
+ * (e.g. holds-expiry); anything that sends must go through `forEachLiveBusiness`.
+ */
+export async function forEachBusiness(
+  deps: CronDeps,
+  job: CronJobName,
+  work: (business: Business) => Promise<BusinessCounts>,
+  businesses: readonly Business[],
+): Promise<CronSummary> {
   const results: BusinessResult[] = [];
-  for (const business of live) {
+  for (const business of businesses) {
     try {
       results.push({ businessId: business.id, status: "ok", ...(await work(business)) });
     } catch (error) {
@@ -81,7 +94,7 @@ export async function forEachLiveBusiness(
   const sum = (key: keyof BusinessCounts) => results.reduce((acc, r) => acc + (r.status === "ok" ? r[key] : 0), 0);
   return {
     job,
-    businesses: live.length,
+    businesses: businesses.length,
     done: sum("done"),
     duplicates: sum("duplicates"),
     failed: sum("failed") + results.filter((r) => r.status === "failed").length,

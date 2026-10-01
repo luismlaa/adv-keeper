@@ -194,14 +194,16 @@ describe("reactivation-scan cron", () => {
 });
 
 describe("holds-expiry cron", () => {
-  it("expires live holds only, and the second run finds nothing", async () => {
+  it("expires live and demo holds without messaging anyone, and the second run finds nothing", async () => {
     const w = world();
     const holdIds = w.store.appointments.filter((a) => a.status === "hold_pending_deposit").map((a) => a.id);
-    expect(await runHoldsExpiry(w.deps)).toMatchObject({ job: "holds-expiry", businesses: 1, done: 1 });
+    expect(await runHoldsExpiry(w.deps)).toMatchObject({ job: "holds-expiry", businesses: 2, done: 2 });
     const holds = w.store.appointments.filter((a) => holdIds.includes(a.id));
     expect(holds.find((a) => a.businessId === live.id)?.status).toBe("expired");
-    expect(holds.find((a) => a.businessId === demo.id)?.status).toBe("hold_pending_deposit");
-    expect(w.store.activity.filter((a) => a.action === "hold_expired").map((a) => a.businessId)).toEqual([live.id]);
+    expect(holds.find((a) => a.businessId === demo.id)?.status).toBe("expired");
+    expect(w.store.activity.filter((a) => a.action === "hold_expired").map((a) => a.businessId).sort()).toEqual([live.id, demo.id].sort());
+    expect(recorded(w.liveMessaging)).toHaveLength(0);
+    expect(w.store.notifications).toHaveLength(0);
     expect(await runHoldsExpiry(w.deps)).toMatchObject({ done: 0 });
   });
 });
