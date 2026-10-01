@@ -75,7 +75,7 @@ Before hand-rolling a clearly common capability (UI kit setup, deploy, e2e testi
 - **Agent** `src/lib/agent/` — `concierge.ts` tool-use loop; `tools.ts` zod contracts (strict objects); `tool-executor.ts` validation + tiers + per-turn caps; `prompt.ts` loads `prompts/concierge/<version>/system.md` (cached block + per-turn block).
 - **Tenancy** — every table has `business_id`; RLS via `is_member()` on `memberships`. Owners use the RLS session client (`src/lib/db/server.ts`); webhooks/crons/agent use the admin client.
 - Config: env via zod (`src/lib/config/env.ts`); per-business settings = `config/business-defaults.json` + `businesses.settings` overrides (`resolveBusinessSettings`).
-- Crons in `vercel.json`, authenticated with `isAuthorizedCron` (`src/lib/cron.ts`).
+- Crons: daily ones in `vercel.json` (Hobby); sub-daily ones (`holds-expiry`, `reminders`) via Supabase `pg_cron` + `pg_net` hitting the same routes with the `CRON_SECRET` bearer. All authenticated with `isAuthorizedCron` (`src/lib/cron.ts`).
 
 ## Critical Rules
 - NEVER commit secrets — `.env.local` only; `.env.example` lists every var.
@@ -90,6 +90,6 @@ Before hand-rolling a clearly common capability (UI kit setup, deploy, e2e testi
 
 ## Gotchas
 - Next.js 16: read `node_modules/next/dist/docs/` before using an API; `middleware` is now `proxy`; route `params` are Promises.
-- Vercel Hobby only allows daily crons — `holds-expiry` (every 10 min) and `reminders` (hourly) need Vercel Pro, or move them to Supabase `pg_cron`.
+- Vercel Hobby only allows daily crons and a deploy with a sub-daily cron in `vercel.json` FAILS. Pre-launch is zero-cost → keep `vercel.json` daily-only; sub-daily jobs go to `pg_cron`.
 - MVP assumes ONE resource per business (DB exclusion constraint `appointments_no_overlap`). Multi-cabin/staff is v2.
 - Timezone is `America/Santo_Domingo` (UTC-4, no DST); always compute wall-clock times with `src/lib/domain/time.ts`.
