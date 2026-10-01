@@ -58,16 +58,17 @@ Leyenda: 👤 = lo haces tú (cuentas, credenciales, trámites) · 🤖 = lo con
 - [ ] Validar WhatsApp: mensaje real → una sola respuesta; plantilla real cuando Meta la apruebe
 - [ ] Validar Azul/Cardnet con el sandbox del primer cliente (los ⚠️ del PR #12: orden del hash, codificación, campos de retorno, URL de producción de Cardnet)
 
-### 🤖 Antes del primer cliente (huecos conocidos)
-- [ ] **Alta de negocio**: no existe forma de crear un tenant real ni de guardar sus credenciales de Azul/Cardnet (se cifran desde la app, no por SQL) → script `npm run onboard` (negocio + dueña + membresía + credenciales cifradas + `whatsapp_phone_number_id`)
-- [ ] Actualizar `docs/onboarding-negocio.md`: URLs de pago cambiaron (`/api/pay/<provider>/<linkId>/return/...`) y el paso de credenciales
-- [ ] Cancelar una cita en hold desde el dashboard deja abierto el link de pago
-- [ ] Reconciliación de pagos: si la clienta paga y cierra el navegador antes de volver, Keeper no se entera
-- [ ] `/ajustes`: mostrar "Google conectado / error" tras el OAuth (`?google=`)
-- [ ] Menores: guardar el nombre de perfil de WhatsApp como nombre de la clienta; llave de sesión de Cardnet en columna propia (hoy cifrada en `activity_log`); posible doble envío de WhatsApp si Meta acepta y responde 5xx; dueña con varios negocios ve el más antiguo
+### 🤖 Antes del primer cliente (huecos conocidos) — PRs abiertos, verificados juntos (278 tests + build)
+- [x] **Alta de negocio** → `npm run onboard` (create · set-payments · set-whatsapp · status · go-live · pause), credenciales cifradas por negocio; probado contra Supabase real (PR #16)
+- [x] `docs/onboarding-negocio.md` reescrito alrededor del CLI, con las URLs de pago corregidas (PR #16)
+- [x] Cancelar un hold desde la agenda vence su anticipo pendiente (PR #17). Las páginas de pago ya rechazaban la cita cancelada
+- [x] Reconciliación: antes de vencer un hold de **Cardnet** se consulta la pasarela y, si está pagado, se confirma (PR #18). **Azul** no tiene consulta de estado: un pago tardío queda como `late_payment` para la dueña
+- [x] `/ajustes` muestra "Google conectado" o el motivo del error (PR #19)
+- [x] Clientas nuevas por WhatsApp toman su nombre de perfil (PR #20)
+- [ ] Aceptados por ahora: llave de sesión de Cardnet en columna propia (hoy cifrada en `activity_log`; cambio de núcleo); posible doble envío de WhatsApp si Meta acepta y responde 5xx; dueña con varios negocios (v2)
 
 ### 👤 Onboarding del primer cliente
-- [ ] Seguir `docs/onboarding-negocio.md` (actualizado)
+- [ ] Seguir `docs/onboarding-negocio.md` con `npm run onboard`
 - [ ] Checklist P0 de `docs/deploy.md` (RLS con dos negocios ✅ probado en M1, alertas de error, timeouts)
 - [ ] Prueba real: reserva → anticipo pequeño → 💰 en agenda → evento en Google → recordatorio por WhatsApp
 

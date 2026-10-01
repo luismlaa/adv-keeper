@@ -27,8 +27,7 @@
 ## Hito M2 — Primer negocio en vivo ⏳ (código ✅ · validación pendiente)
 - [x] Núcleo #9 · D1 WhatsApp #11 · D2 Google #10 · D3 Pagos #12 · D4 crons + live #13 · holds demo #14
 - [x] Infra: migraciones aplicadas, Vault, `pg_cron` verificado contra producción
-- [ ] Script de alta de negocio (`npm run onboard`) + actualizar `docs/onboarding-negocio.md`
-- [ ] Huecos: hold cancelado deja link abierto · reconciliación de pagos · aviso Google en `/ajustes`
+- [x] `npm run onboard` + `docs/onboarding-negocio.md` (#16) · hold cancelado → anticipo vencido (#17) · reconciliación Cardnet (#18) · aviso Google en `/ajustes` (#19) · nombre de perfil WhatsApp (#20)
 - [ ] Validación con credenciales reales (Google, Meta; Azul/Cardnet con el primer cliente)
 - [ ] Onboarding real + P0 de `docs/deploy.md`
 
