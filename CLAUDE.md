@@ -35,6 +35,7 @@
 ## 🧠 Knowledge & Memory — read FIRST, it saves context
 
 - **Project memory (the *why*)** → `~/.claude/projects/C--Users-LUIS-adv-keeper/memory/MEMORY.md` (auto-loaded). Decisions, domain glossary (anticipo/hold, paquetes), MVP context, gotchas, lessons. When you learn something non-obvious, add a one-fact flat file (`decision-*.md`, `domain-*.md`, `context-*.md`, `type: reference|feedback`), link with `[[wikilinks]]`, and add a pointer line in `MEMORY.md`.
+- **Repo mirror of the memory** → `docs/decisiones.md` (decisions, domain glossary, MVP context; no secrets). On a fresh clone or another device the local memory doesn't exist — read this file first. When a decision changes, update both.
 - **Code graph (the *what connects to what*)** → Graphify. For "where is X used / how does this flow" run `/graphify query "…"` FIRST instead of reading files. Refresh with `/graphify . --update` after structural changes. `graphify-out/` is gitignored — regenerate on a fresh clone with `/graphify . --obsidian`.
 
 Rule of thumb: **code/architecture question → graphify first. "Why / plan / what does this term mean" → project memory first.**
@@ -59,7 +60,7 @@ Before hand-rolling a clearly common capability (UI kit setup, deploy, e2e testi
 
 ## Build & Run
 - `npm install`
-- `cp .env.example .env.local` and fill in real values
+- `.env.local`: copy it privately from the main machine, or `npx vercel link` + `npx vercel env pull .env.local --environment=production` (never commit it)
 - Apply `supabase/migrations/*.sql` to your Supabase project (SQL editor or `npx supabase db push`), then `npm run seed:demo`
 - `npm run dev` → http://localhost:3000
 
