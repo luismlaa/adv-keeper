@@ -24,13 +24,12 @@
 - [x] Deploy a Vercel (Hobby, https://adv-keeper.vercel.app, auto-deploy desde `main`); flujo completo probado en producción
 - [ ] Ensayo de `docs/demo-pitch.md` en teléfono (👤)
 
-## Hito M2 — Primer negocio en vivo ⏳
-- [ ] **D1 · `feat/live-whatsapp`**: `MessagingChannel` Cloud API (texto + plantillas, timeout + retry), webhook GET verify / POST firmado → `handleClientMessage`, dedupe por message id, `notifications/templates.ts`
-- [ ] **D2 · `feat/live-google-calendar`**: `crypto.ts` (AES-256-GCM), OAuth start/callback con `state` atado a sesión+negocio, `CalendarProvider` freeBusy/insert/delete
-- [ ] **D3 · `feat/live-payments`**: `PaymentProvider` Azul + Cardnet (hash builder aislado y testeado), `/api/pay/[provider]/[linkId]`
-- [ ] **D4 · `feat/live-crons`** (después de D1–D3): `live.ts` + `registerLiveAdapters`, crons holds-expiry/reminders (migración `pg_cron` + `pg_net`) y package-nudges/reactivation-scan (`vercel.json` diario/semanal)
-- [ ] Onboarding real (`docs/onboarding-negocio.md`)
-- [ ] P0 checklist de `docs/deploy.md`
+## Hito M2 — Primer negocio en vivo ⏳ (código ✅ · validación pendiente)
+- [x] Núcleo #9 · D1 WhatsApp #11 · D2 Google #10 · D3 Pagos #12 · D4 crons + live #13 · holds demo #14
+- [x] Infra: migraciones aplicadas, Vault, `pg_cron` verificado contra producción
+- [x] `npm run onboard` + `docs/onboarding-negocio.md` (#16) · hold cancelado → anticipo vencido (#17) · reconciliación Cardnet (#18) · aviso Google en `/ajustes` (#19) · nombre de perfil WhatsApp (#20)
+- [ ] Validación con credenciales reales (Google, Meta; Azul/Cardnet con el primer cliente)
+- [ ] Onboarding real + P0 de `docs/deploy.md`
 
 ## v2 (después del primer cliente)
 - [ ] Multi-recurso (varias cabinas/profesionales) — reemplazar exclusion constraint por recurso
@@ -42,3 +41,4 @@
 - Fase 0: typecheck + lint + 46 tests en verde. Supabase CLI/Docker no están instalados en esta máquina → la migración no se ejecutó localmente; aplicarla en el proyecto Supabase es el primer paso manual.
 - Arranque (2026-09-30): migración aplicada en Supabase y validada con el seed demo; `npm run check` verde.
 - M1 (2026-09-30): A/B/C en paralelo en worktrees → PRs #3/#4/#5; integración combinada verificada antes del merge (119 tests + build). Cierre: 120 tests en verde, `/api/cron/demo-reset` re-sembró la demo real (16 citas, 10 anticipos, 0 restos de prueba), chat respondiendo con el tope diario activo.
+- M2 (2026-10-01): D1–D3 en paralelo sobre el núcleo #9 (integración combinada verificada: 240 tests + build), D4 después; 264 tests. Previews fallaban por falta de env en Preview → corregido. Migración pg_cron tenía variable ambigua (42702) → corregida en #14. pg_cron → Vercel verificado en logs.
