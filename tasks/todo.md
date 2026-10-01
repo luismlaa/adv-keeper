@@ -16,10 +16,11 @@
 - [x] PR #1 mergeado · Supabase creado · migración aplicada · Auth sin registro público
 - [x] `.env.local` · `npm run seed:demo` (8 servicios, 20 clientas, 16 citas, 10 anticipos) · `npm run check` verde (46 tests)
 
-## Hito M1 — Demo lista para pitch ⏳ en curso (tracks A, B, C en paralelo → `tasks/parallel-prompts.md`)
-- [ ] **A · `feat/concierge-chat`**: `/api/chat` + `/chat/[slug]` (persistir conversación/mensajes, cookie de sesión anónima con teléfono demo)
-- [ ] **B · `feat/owner-dashboard`**: login, agenda día/semana 💰/pendiente, ficha clienta, reactivar, aprobaciones, servicios
-- [ ] **C · `feat/demo-experience`**: landing, `/demo`, checkout simulado `/pay/demo/[linkId]` + webhook de pagos, `demo-reset` cron, límites de costo
+## Hito M1 — Demo lista para pitch ✅ código (falta deploy)
+- [x] **A · `feat/concierge-chat`** (PR #4): `/api/chat` + `/chat/[slug]` (persistir conversación/mensajes, cookie de sesión anónima con teléfono demo)
+- [x] **B · `feat/owner-dashboard`** (PR #5): login, agenda día/semana 💰/pendiente, ficha clienta, reactivar, aprobaciones, servicios
+- [x] **C · `feat/demo-experience`** (PR #3): landing, `/demo`, checkout simulado `/pay/demo/[linkId]` + webhook de pagos, `demo-reset` cron, límites de costo
+- [x] Cierre: `isDemoBudgetExhausted` cableado en `handleClientMessage` (429 `daily_budget`), `typecheck` = `next typegen && tsc`, reset real probado
 - [ ] Deploy a Vercel con tenant demo; recorrer `docs/demo-pitch.md` completo
 
 ## Hito M2 — Primer negocio en vivo
@@ -36,3 +37,4 @@
 ## Review
 - Fase 0: typecheck + lint + 46 tests en verde. Supabase CLI/Docker no están instalados en esta máquina → la migración no se ejecutó localmente; aplicarla en el proyecto Supabase es el primer paso manual.
 - Arranque (2026-09-30): migración aplicada en Supabase y validada con el seed demo; `npm run check` verde.
+- M1 (2026-09-30): A/B/C en paralelo en worktrees → PRs #3/#4/#5; integración combinada verificada antes del merge (119 tests + build). Cierre: 120 tests en verde, `/api/cron/demo-reset` re-sembró la demo real (16 citas, 10 anticipos, 0 restos de prueba), chat respondiendo con el tope diario activo.

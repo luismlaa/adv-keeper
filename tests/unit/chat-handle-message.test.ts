@@ -37,7 +37,7 @@ const toolUse = (id: string, name: string, input: unknown) => ({ type: "tool_use
 
 const PHONE = "+18090001234";
 
-function setup(replies: Reply[], maxPerSession = 30) {
+function setup(replies: Reply[], maxPerSession = 30, dailyBudgetExhausted = false) {
   const h = harness();
   const llm = scriptedLlm(replies);
   const conversations = new MemoryConversationRepo(
@@ -53,6 +53,7 @@ function setup(replies: Reply[], maxPerSession = 30) {
     model: "claude-test",
     maxTokens: 512,
     demoMaxMessagesPerSession: maxPerSession,
+    isDailyBudgetExhausted: async () => dailyBudgetExhausted,
   };
   const say = (t: string) => handleClientMessage({ businessId: business.id, phone: PHONE, text: t, channel: "web" }, deps);
   return { h, llm, conversations, deps, say };
@@ -102,6 +103,14 @@ describe("handleClientMessage", () => {
     await expect(say("otra más")).rejects.toMatchObject({ code: "session_limit" });
     expect(llm.requests.length).toBe(calls);
     expect(conversations.messages.filter((m) => m.role === "client")).toHaveLength(2);
+  });
+
+  it("refuses without calling Claude or storing the message when the demo daily budget is spent", async () => {
+    const { h, llm, conversations, say } = setup([[text("no debería salir")]], 30, true);
+    await expect(say("hola")).rejects.toMatchObject({ code: "daily_budget" });
+    expect(llm.requests).toHaveLength(0);
+    expect(conversations.messages).toHaveLength(0);
+    expect(h.store.activity.some((a) => a.action === "rate_limited")).toBe(true);
   });
 
   it("keeps the client's message when Claude fails and folds it into the next turn", async () => {

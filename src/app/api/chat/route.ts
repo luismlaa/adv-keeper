@@ -4,7 +4,7 @@ import { getServerEnv } from "@/lib/config/env";
 import { loadDisplayMessages } from "@/lib/chat/chat-view";
 import { defaultChatDeps } from "@/lib/chat/deps";
 import { handleClientMessage, MAX_CLIENT_TEXT_LENGTH } from "@/lib/chat/handle-message";
-import { ChatError, LLM_UNAVAILABLE_MESSAGE, sessionLimitMessage } from "@/lib/chat/limits";
+import { ChatError, DAILY_BUDGET_MESSAGE, LLM_UNAVAILABLE_MESSAGE, sessionLimitMessage } from "@/lib/chat/limits";
 import { allocateWebPhone, chatCookieName, chatCookieOptions, signWebIdentity, verifyWebIdentity } from "@/lib/chat/web-identity";
 
 const bodySchema = z.strictObject({
@@ -45,6 +45,8 @@ export async function POST(request: Request) {
     switch (e.code) {
       case "session_limit":
         return error(429, e.code, sessionLimitMessage(env.DEMO_MAX_MESSAGES_PER_SESSION));
+      case "daily_budget":
+        return error(429, e.code, DAILY_BUDGET_MESSAGE);
       case "llm_unavailable":
         console.error("[chat] concierge turn failed", { business: business.slug, error: e.message });
         return error(503, e.code, LLM_UNAVAILABLE_MESSAGE);

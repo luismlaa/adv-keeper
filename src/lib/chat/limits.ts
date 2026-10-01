@@ -1,6 +1,6 @@
 import type { Business } from "@/lib/schemas/entities";
 
-export type ChatErrorCode = "invalid_input" | "business_not_found" | "session_limit" | "llm_unavailable";
+export type ChatErrorCode = "invalid_input" | "business_not_found" | "session_limit" | "daily_budget" | "llm_unavailable";
 
 /** Expected failures of a chat turn. Callers map `code` to a status / friendly message. */
 export class ChatError extends Error {
@@ -39,6 +39,9 @@ export function sessionLimitStatus({ integrationMode, clientMessagesSoFar, maxPe
 export function sessionLimitMessage(maxPerSession: number): string {
   return `Esta demo permite hasta ${maxPerSession} mensajes por conversación y ya llegaste al límite. ¡Gracias por probar Keeper! Si quieres verlo con tu propio negocio, escríbenos.`;
 }
+
+export const DAILY_BUDGET_MESSAGE =
+  "La demo de Keeper llegó a su límite de mensajes por hoy. ¡Vuelve mañana para seguir probando! Si quieres verlo con tu propio negocio, escríbenos.";
 
 export const LLM_UNAVAILABLE_MESSAGE = "Uy, tuve un problema para responder. Intenta de nuevo en un momento, por favor.";
 

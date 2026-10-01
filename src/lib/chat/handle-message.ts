@@ -25,6 +25,8 @@ export interface ChatDeps {
   model: string;
   maxTokens: number;
   demoMaxMessagesPerSession: number;
+  /** Demo daily Claude budget (`isDemoBudgetExhausted`); always false for live businesses. */
+  isDailyBudgetExhausted: (businessId: string) => Promise<boolean>;
 }
 
 export const clientMessageInputSchema = z.object({
@@ -63,7 +65,20 @@ export async function handleClientMessage(input: ClientMessageInput, deps?: Chat
   const client = await d.store.findOrCreateClient(business.id, phone, null);
   const conversationId = await loadOrCreateConversation(d, business.id, client.id, channel);
 
-  // Cost guard. TODO(after Task C merges): also refuse when isDemoBudgetExhausted(business.id).
+  // Cost guards (demo only): the daily budget across all sessions, then the per-session cap.
+  // Checked before the incoming message is stored, so it never counts toward either limit.
+  if (await d.isDailyBudgetExhausted(business.id)) {
+    await d.store.logActivity({
+      businessId: business.id,
+      actor: "system",
+      entity: "conversation",
+      entityId: conversationId,
+      action: "rate_limited",
+      reason: "Demo daily message budget exhausted",
+      meta: { clientId: client.id, channel },
+    });
+    throw new ChatError("daily_budget", "Demo daily message budget exhausted");
+  }
   const limit = sessionLimitStatus({
     integrationMode: business.integrationMode,
     clientMessagesSoFar: business.integrationMode === "demo" ? await d.conversations.countClientMessages(business.id, conversationId) : 0,
