@@ -121,7 +121,11 @@ describe("WhatsApp webhook POST", () => {
     const res = await s.deliver(webhookBody([textMsg("wamid.IN1", "¿Cuánto cuesta la limpieza facial?")]));
 
     expect(res.status).toBe(200);
-    expect(s.chatInputs).toEqual([{ businessId: business.id, phone: "+18095559876", text: "¿Cuánto cuesta la limpieza facial?", channel: "whatsapp" }]);
+    expect(s.chatInputs).toEqual([
+      { businessId: business.id, phone: "+18095559876", text: "¿Cuánto cuesta la limpieza facial?", channel: "whatsapp", profileName: "María Pérez" },
+    ]);
+    // A client created by her first WhatsApp message takes her profile name.
+    expect(s.h.store.clients.find((c) => c.phone === "+18095559876")?.name).toBe("María Pérez");
     expect(s.graphCalls).toHaveLength(1);
     expect(s.graphCalls[0]!.url).toBe(`https://graph.facebook.com/v23.0/${PHONE_NUMBER_ID}/messages`);
     expect(s.graphCalls[0]!.body).toMatchObject({ to: "18095559876", type: "text", text: { body: "¡Hola María! La limpieza facial cuesta RD$3,500." } });

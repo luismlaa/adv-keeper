@@ -125,7 +125,7 @@ async function replyFor(deps: InboundDeps, business: Business, message: InboundW
     return NUDGE_MESSAGE_TYPES.has(message.type) ? UNSUPPORTED_MESSAGE_REPLY : null;
   }
   try {
-    const { reply } = await deps.handleMessage({ businessId: business.id, phone: message.phone, text: message.text, channel: "whatsapp" });
+    const { reply } = await deps.handleMessage({ businessId: business.id, phone: message.phone, text: message.text, channel: "whatsapp", profileName: message.profileName });
     return reply;
   } catch (error) {
     deps.log?.("chat_failed", {

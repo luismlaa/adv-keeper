@@ -34,6 +34,8 @@ export const clientMessageInputSchema = z.object({
   phone: z.string().trim().min(5).max(32),
   text: z.string().trim().min(1).max(MAX_CLIENT_TEXT_LENGTH),
   channel: z.enum(["web", "whatsapp"]),
+  /** WhatsApp profile name: used only as the name of a client created by this message. */
+  profileName: z.string().trim().min(1).max(80).nullish(),
 });
 
 export type ClientMessageInput = z.input<typeof clientMessageInputSchema>;
@@ -56,13 +58,13 @@ async function loadOrCreateConversation(deps: ChatDeps, businessId: string, clie
 export async function handleClientMessage(input: ClientMessageInput, deps?: ChatDeps): Promise<ClientMessageResult> {
   const parsed = clientMessageInputSchema.safeParse(input);
   if (!parsed.success) throw new ChatError("invalid_input", parsed.error.issues.map((i) => i.message).join("; "));
-  const { businessId, phone, text, channel } = parsed.data;
+  const { businessId, phone, text, channel, profileName } = parsed.data;
   const d = deps ?? defaultChatDeps();
 
   const business = await d.store.getBusinessById(businessId);
   if (!business) throw new ChatError("business_not_found", `Business ${businessId} not found`);
   const settings = resolveBusinessSettings(business.settings);
-  const client = await d.store.findOrCreateClient(business.id, phone, null);
+  const client = await d.store.findOrCreateClient(business.id, phone, profileName ?? null);
   const conversationId = await loadOrCreateConversation(d, business.id, client.id, channel);
 
   // Cost guards (demo only): the daily budget across all sessions, then the per-session cap.
