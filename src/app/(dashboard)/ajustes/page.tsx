@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { requireOwnerContext } from "@/lib/dashboard/context";
+import { googleConnectNotice } from "@/lib/dashboard/google-notice";
+import type { SearchPageProps } from "@/lib/dashboard/route-props";
 import { minorToPesosInput } from "@/lib/dashboard/money-input";
 import { formatDayHours, WEEKDAY_LABELS } from "@/lib/dashboard/settings-form";
 import { saveSettingsAction } from "./actions";
@@ -21,8 +23,9 @@ function NumberField({ name, label, value, hint, min, max }: { name: string; lab
   );
 }
 
-export default async function SettingsPage() {
+export default async function SettingsPage({ searchParams }: SearchPageProps) {
   const ctx = await requireOwnerContext();
+  const notice = googleConnectNotice(await searchParams);
   const s = ctx.settings;
   const { business } = ctx;
 
@@ -38,7 +41,19 @@ export default async function SettingsPage() {
             {business.googleCalendarId ? ` Calendario actual: ${business.googleCalendarId}.` : " Aún no está conectado."}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
+          {notice ? (
+            <p
+              role="status"
+              className={
+                notice.tone === "success"
+                  ? "rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800"
+                  : "rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
+              }
+            >
+              {notice.text}
+            </p>
+          ) : null}
           <Button asChild variant="outline">
             {/* Plain anchor: the OAuth start route redirects off-site to Google. */}
             <a href="/api/integrations/google/start">Conectar Google Calendar</a>
