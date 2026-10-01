@@ -26,7 +26,7 @@ Leyenda: 👤 = lo haces tú (cuentas, credenciales, trámites) · 🤖 = lo con
 - [x] Revisar y hacer merge de A, B y C (👤)
 - [x] Cierre M1: tope diario de la demo conectado al chat, `typecheck` genera tipos de rutas, reset real de la demo probado con `CRON_SECRET`
 - [ ] Deploy en **Vercel** con variables de entorno + `APP_URL` de producción (👤). Ojo: el botón "Pagar anticipo" postea al webhook en `APP_URL`, tiene que ser la URL real
-- [ ] Decidir el plan de Vercel: **Pro** para crons cada 10 min/hora, o mover esos crons a Supabase `pg_cron` (👤)
+- [x] Decidir el plan de Vercel → **Hobby (gratis)**: `vercel.json` solo tiene el cron diario `demo-reset`; los crons frecuentes irán en Supabase `pg_cron` + `pg_net` (track D). Regla: preconstruir a costo 0
 - [ ] Ensayar `docs/demo-pitch.md` de punta a punta en el teléfono (👤)
 - [ ] Compartir credenciales demo con los primeros prospectos (👤)
 
@@ -64,4 +64,5 @@ Leyenda: 👤 = lo haces tú (cuentas, credenciales, trámites) · 🤖 = lo con
 - Seguimientos del M1 (antes del primer cliente real): cancelar una cita en hold desde el dashboard deja abierto el link de pago (la dueña solo puede leer `deposits` bajo RLS); el texto de "Reenganchar" debe alinearse con la plantilla aprobada de WhatsApp (track D); una dueña con varios negocios siempre ve el más antiguo.
 - El repo en GitHub es **público**. Nunca subas `.env.local`; ya está ignorado. Considera hacerlo privado antes de tener clientes.
 - ~~La migración todavía no se ha probado contra un Postgres real~~ → aplicada en Supabase y validada por `npm run seed:demo` (2026-09-30).
-- En producción, las holds de 30 min dependen del cron de expiración (ver la decisión Vercel Pro vs `pg_cron`).
+- En producción, las holds de 30 min dependen del cron de expiración en `pg_cron` (track D). En la demo, una hold sin pagar bloquea su horario hasta el reset nocturno.
+- Vercel Hobby es solo para uso no comercial: al cobrarle al primer cliente hay que pasar a Pro (o a otro host).
